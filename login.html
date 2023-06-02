@@ -136,25 +136,56 @@
     <main class="form-signin w-100 m-auto">
         <form>
             <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
-
+    
             <div class="form-floating">
-                <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
-                <label for="floatingInput">Email address</label>
+                <input type="text" class="form-control" id="username" placeholder="name@example.com">
+                <label for="username">Username</label>
             </div>
             <div class="form-floating">
-                <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
-                <label for="floatingPassword">Password</label>
+                <input type="password" class="form-control" id="password" placeholder="Password">
+                <label for="password">Password</label>
             </div>
-
+    
             <div class="checkbox mb-3">
                 <label>
-        <input type="checkbox" value="remember-me"> Remember me
-      </label>
+                    <input type="checkbox" value="remember-me"> Remember me
+                </label>
             </div>
             <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
             <p class="mt-5 mb-3 text-body-secondary">© 2017–2023</p>
         </form>
     </main>
+    
+    <script>
+        const form = document.querySelector('form');
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+    
+            const username = document.querySelector('#username').value;
+            const password = document.querySelector('#password').value;
+    
+            const response = await fetch('http://172.20.10.4:8000/auth/jwt/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: username,
+                    password: password
+                })
+            });
+    
+            if (response.status === 401) {
+                console.error('Invalid credentials');
+            } else if (response.status === 200) {
+                const data = await response.json();
+                console.log(data);
+                let access = data.access
+                localStorage.setItem('access', access)
+                window.location.href = "/home.html"
+            }
+        });
+    </script>
 
 
 </body>
