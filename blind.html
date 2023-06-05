@@ -286,51 +286,84 @@
                 <th scope="col">#</th>
                 <th scope="col">First</th>
                 <th scope="col">Last</th>
-                <th scope="col">Handle</th>
-                <th scope="col">Edit/Delete</th>
+                <th scope="col">show/Delete</th>
                 
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <th scope="row">1</th>
-                <td>Mark</td>
-                <td>Otto</td>
-                <td>@mdo</td>
-                <td>
-                    <a href="/showblind.html"type="button" class="btn btn-sm btn-primary">Edit</a>
-                    <button type="button" class="btn btn-sm btn-danger">Delete</button>
-                </td>
-
-        
-              </tr>
-              <tr>
-                <th scope="row">2</th>
-                <td>Jacob</td>
-                <td>Thornton</td>
-                <td>@fat</td>
-                <td>
-                    <a
-                      href="/showblind.html"
-                      type="button" class="btn btn-sm btn-primary">Edit</a>
-                    <button type="button" class="btn btn-sm btn-danger">Delete</button>
-                </td>
-
-                
-              </tr>
-              <tr>
-                <th scope="row">3</th>
-                <td colspan="2">Larry the Bird</td>
-                <td>@twitter</td>
-                <td>
-                    <a href="/showblind.html"type="button" class="btn btn-sm btn-primary">Edit</a>
-                    <button type="button" class="btn btn-sm btn-danger">Delete</button>
-                </td>
-
-                
-              </tr>
-            </tbody>
+            <tbody id="table-body">
+                          </tbody>
           </table>
+          <script>
+       async function getData() {
+              const response = await fetch('http://172.20.10.4:8000/V1/blinds/', {
+                method: 'GET',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': 'JWT ' + localStorage.getItem('access')
+                },
+              });
+          
+              if (response.status === 401) {
+                console.error('Invalid credentials');
+              } else if (response.status === 200) {
+                const data = await response.json();
+                console.log(data);
+          
+                const tableBody = document.querySelector('#table-body');
+          
+                data.forEach((blind, index) => {
+                  const row = document.createElement('tr');
+          
+                  const idCell = document.createElement('td');
+                  idCell.textContent =blind.id;
+                  row.appendChild(idCell);
+          
+                  const firstNameCell = document.createElement('td');
+                  firstNameCell.textContent =blind.first_name;
+                  row.appendChild(firstNameCell);
+          
+                  const lastNameCell = document.createElement('td');
+                  lastNameCell.textContent = blind.last_name;
+                  row.appendChild(lastNameCell);
+
+          
+                  const actionsCell = document.createElement('td');
+                  const editButton = document.createElement('a');
+                  editButton.href = '/showblind.html?id=' + blind.id;
+                  editButton.type = 'button';
+                  editButton.classList.add('btn', 'btn-sm', 'btn-primary');
+                  editButton.textContent = 'Show';
+                  actionsCell.appendChild(editButton);
+          
+                  const deleteButton = document.createElement('button');
+                  deleteButton.type = 'button';
+                  deleteButton.classList.add('btn', 'btn-sm', 'btn-danger');
+                  deleteButton.textContent = 'Delete';
+                  deleteButton.addEventListener('click', async () => {
+                    const deleteResponse = await fetch(`http://172.20.10.4:8000/V1/blinds/${blind.id}`, {
+                      method: 'DELETE',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'JWT ' + localStorage.getItem('access')
+                      },
+                    });
+                    if (deleteResponse.status === 204) {
+                      row.remove();
+                    } else {
+                      console.error('Failed to delete blind');
+                    }
+                  });
+                  actionsCell.appendChild(deleteButton);
+          
+                  row.appendChild(actionsCell);
+          
+                  tableBody.appendChild(row);
+                });
+              }
+            }
+          
+            getData();
+          </script>
 
         <script src="/docs/5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 
