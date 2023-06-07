@@ -4,6 +4,7 @@
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js" integrity="sha384-zYPOMqeu1DAVkHiLqWBUTcbYfZ8osu1Nd6Z89ify25QV9guujx43ITvfi12/QExE" crossorigin="anonymous"></script>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
 
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -266,7 +267,7 @@
             <div class="btn-toolbar mb-2 mb-md-0">
             <div class="btn-group me-2">
                 <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
-                <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" id="export-btn">Export</button>
             </div>
             <a 
               href="/newcustomer.html"
@@ -368,6 +369,36 @@
   }
 
   getData();
+  
+</script>
+
+<script>
+  document.getElementById("export-btn").addEventListener("click", exportTable);
+  function exportTable() {
+  // Get the table element
+  var table = document.querySelector(".table");
+
+  // Convert the table to a worksheet object
+  var worksheet = XLSX.utils.table_to_sheet(table);
+
+  // Create a new workbook and add the worksheet
+  var workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+
+  // Convert the workbook to a binary Excel file and trigger the download
+  var fileData = XLSX.write(workbook, { bookType: "xlsx", type: "binary" });
+  saveAs(new Blob([s2ab(fileData)], { type: "application/octet-stream" }), "table.xlsx");
+}
+
+// Utility function to convert a string to an ArrayBuffer
+function s2ab(s) {
+  var buf = new ArrayBuffer(s.length);
+  var view = new Uint8Array(buf);
+  for (var i = 0; i < s.length; i++) view[i] = s.charCodeAt(i) & 0xff;
+  return buf;
+}
+exportTable();
+s2ab();
 </script>
         
 
