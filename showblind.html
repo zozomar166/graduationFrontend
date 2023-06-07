@@ -273,7 +273,7 @@
             <button type="button" class="btn btn-sm btn-primary">Edit</button>
                 
         </div>
-        <div data-bs-spy="scroll" data-bs-target="#navbar-example2" data-bs-root-margin="0px 0px -40%" data-bs-smooth-scroll="true" class="scrollspy-example bg-body-tertiary p-3 rounded-2" tabindex="0">
+        <div id="datacustomer" data-bs-spy="scroll" data-bs-target="#navbar-example2" data-bs-root-margin="0px 0px -40%" data-bs-smooth-scroll="true" class="scrollspy-example bg-body-tertiary p-3 rounded-2" tabindex="0">
             <h4 id="scrollspyHeading1">First Name</h4>
             <p>Aziz</p>
             <h4 id="scrollspyHeading2">Last Name</h4>
@@ -285,6 +285,49 @@
             <h4 id="scrollspyHeading5">Customer</h4>
             <p>zozo</p>
           </div>
+          <script>
+            function getData(){
+              const urlParams = new URLSearchParams(window.location.search);
+              const id = urlParams.get('id');
+
+              fetch(`http://192.168.43.55:8000/V1/blinds/${id}/`, {
+                  method: 'GET',
+                  headers: {
+                      'Content-Type': 'application/json',
+                      'Authorization': 'JWT ' + localStorage.getItem('access')
+                  }})
+                .then(response => response.json())
+                .then(data => {
+                  console.log(data)
+                  const firstName = data.first_name;
+                  const lastName = data.last_name;
+                  const address = data.address;
+                  const phone = data.phone;
+                  const customer = data.user;
+                  
+                  const html = `
+                    </div>
+                    <div data-bs-spy="scroll" data-bs-target="#navbar-example2" data-bs-root-margin="0px 0px -40%" data-bs-smooth-scroll="true" class="scrollspy-example bg-body-tertiary p-3 rounded-2" tabindex="0">
+                      <h4 id="scrollspyHeading1">First Name</h4>
+                      <p>${firstName}</p>
+                      <h4 id="scrollspyHeading2">Last Name</h4>
+                      <p>${lastName}</p>
+                      <h4 id="scrollspyHeading3">Address</h4>
+                      <p>${address}</p>
+                      <h4 id="scrollspyHeading4">Phone</h4>
+                      <p>${phone}</p>
+                      <h4 id="scrollspyHeading5">Customer</h4>
+                      <p>${customer}</p>
+                    </div>
+                  `;
+                  
+                  // Add the HTML to the page
+                  document.querySelector('#datacustomer').innerHTML = html;
+                })
+                .catch(error => console.error(error));
+            }
+            getData()
+          </script>
 
        
           

@@ -274,12 +274,48 @@
             <button type="button" class="btn btn-sm btn-primary">Edit</button>
             
         </div>
-        <div data-bs-spy="scroll" data-bs-target="#navbar-example2" data-bs-root-margin="0px 0px -40%" data-bs-smooth-scroll="true" class="scrollspy-example bg-body-tertiary p-3 rounded-2" tabindex="0">
+        <div id="datacustomer" data-bs-spy="scroll" data-bs-target="#navbar-example2" data-bs-root-margin="0px 0px -40%" data-bs-smooth-scroll="true" class="scrollspy-example bg-body-tertiary p-3 rounded-2" tabindex="0">
             <h4 id="scrollspyHeading1">API Key</h4>
             <p>25633</p>
-            <h4 id="scrollspyHeading2">Customer</h4>
+            <h4 id="scrollspyHeading2">Blind</h4>
             <p>zozoz</p>
         </div>
+        <script>
+          function getData(){
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('id');
+
+            fetch(`http://192.168.43.55:8000/V1/devices/${id}/`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'JWT ' + localStorage.getItem('access')
+                }})
+              .then(response => response.json())
+              .then(data => {
+                console.log(data)
+                const api_key = data. api_key;
+                const blind = data.blind.first_name;
+               
+                
+                const html = `
+                  </div>
+                  <div data-bs-spy="scroll" data-bs-target="#navbar-example2" data-bs-root-margin="0px 0px -40%" data-bs-smooth-scroll="true" class="scrollspy-example bg-body-tertiary p-3 rounded-2" tabindex="0">
+                    <h4 id="scrollspyHeading1">Api_key</h4>
+                    <p>${api_key}</p>
+                    <h4 id="scrollspyHeading2">Blind</h4>
+                    <p>${blind}</p>
+                   
+                  </div>
+                `;
+                
+                // Add the HTML to the page
+                document.querySelector('#datacustomer').innerHTML = html;
+              })
+              .catch(error => console.error(error));
+          }
+          getData()
+        </script>
 
 
 

@@ -286,7 +286,6 @@
         <table class="table">
             <thead>
               <tr>
-                <th scope="col">#</th>
                 <th scope="col">API KEY</th>
                 <th scope="col">Blind</th>
                 <th>Actions</th>
@@ -325,7 +324,7 @@
                        row.appendChild(firstNameCell);
                
                        const lastNameCell = document.createElement('td');
-                       lastNameCell.textContent = devices.status;
+                       lastNameCell.textContent = devices.blind.first_name;
                        row.appendChild(lastNameCell);
      
                

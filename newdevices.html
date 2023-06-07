@@ -276,13 +276,10 @@
         </div>
         <form>
 
-        <div class="mb-3">
-            <label for="exampleFormControlInput1" class="form-label">API Key</label>
-            <input type="text" class="form-control" id="exampleFormControlInput1">
-          </div>
+          <form>
           <div class="mb-3">
             <label for="exampleFormControlInput1" class="form-label">Customer</label>
-            <select class="form-select" aria-label="Default select example">
+            <select class="form-select" aria-label="Default select example" id="user">
                 <option selected>Customer List</option>
                 <option value="1">One</option>
                 <option value="2">Two</option>
@@ -290,12 +287,82 @@
               </select>
           </div>
          
-          <button type="button" class="btn btn-primary">Create</button>
+          <button type="submit" class="btn btn-primary">Create</button>
+        </form>
         </form>
         
 
 
-       
+               
+        <script>
+          function getData(){
+            fetch('http://192.168.43.55:8000/V1/blinds/', {
+              headers:{
+                      'Content-Type': 'application/json',
+                      'Authorization': 'JWT ' + localStorage.getItem('access')
+                  }
+            })
+              .then(response => response.json())
+              .then(data => {
+                // Get the select element
+                const selectElement = document.querySelector('.form-select');
+
+                // Clear the existing options
+                selectElement.innerHTML = '';
+
+                // Add the default option
+                const defaultOption = document.createElement('option');
+                defaultOption.selected = true;
+                defaultOption.textContent = 'Blinds List';
+                selectElement.appendChild(defaultOption);
+
+                // Add options for each customer
+                data.forEach(customer => {
+                  const option = document.createElement('option');
+                  option.value = customer.id;
+                  option.textContent = customer.first_name;
+                  selectElement.appendChild(option);
+                });
+              })
+              .catch(error => console.error('Error fetching data:', error));
+
+            // Get the form element
+            const form = document.querySelector('form');
+
+            // Add an event listener for the form submit event
+            form.addEventListener('submit', event => {
+              event.preventDefault(); // Prevent the default form submission behavior
+
+              // Get the form data
+              const formData = new FormData(form);
+              const blind_id = document.querySelector('#user').value;
+
+              // Send a POST request to http://172.20.10.4:8000/V1/customers/ with the form data
+              const dataToSend = JSON.stringify({
+                  blind: blind_id,
+
+                })
+                console.log(dataToSend)
+              fetch('http://192.168.43.55:8000/V1/devices/', {
+                method: 'POST',
+                headers:{
+                    'Content-Type': 'application/json',
+                    'Authorization': 'JWT ' + localStorage.getItem('access')
+                },
+                body: dataToSend
+              })
+              .then(response => {
+                response.json()
+                console.log(response)
+                window.location.href = "/devices.html"
+              })
+              .then(data => console.log('Customer created:', data))
+              .catch(error => console.error('Error creating customer:', error));
+            });
+          }
+          getData()
+        </script>
+
 
     
         <script src="/docs/5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
