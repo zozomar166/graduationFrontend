@@ -294,7 +294,7 @@
               const urlParams = new URLSearchParams(window.location.search);
               const id = urlParams.get('id');
 
-              fetch(`http://172.20.10.4:8000/V1/customers/${id}/`, {
+              fetch(`http://192.168.43.55:8000/V1/customers/${id}/`, {
                   method: 'GET',
                   headers: {
                       'Content-Type': 'application/json',

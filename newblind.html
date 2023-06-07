@@ -274,25 +274,26 @@
             
             
         </div>
+        <form>
         <div class="mb-3">
             <label for="exampleFormControlInput1" class="form-label">First Name</label>
-            <input type="text" class="form-control" id="exampleFormControlInput1">
+            <input type="text" class="form-control" id="firstname">
           </div>
           <div class="mb-3">
             <label for="exampleFormControlInput1" class="form-label">Last Name</label>
-            <input type="text" class="form-control" id="exampleFormControlInput1">
+            <input type="text" class="form-control" id="lastname">
           </div>
           <div class="mb-3">
             <label for="exampleFormControlInput1" class="form-label">Address</label>
-            <input type="text" class="form-control" id="exampleFormControlInput1">
+            <input type="text" class="form-control" id="address">
           </div>
           <div class="mb-3">
             <label for="exampleFormControlInput1" class="form-label">Phone</label>
-            <input type="text" class="form-control" id="exampleFormControlInput1">
+            <input type="text" class="form-control" id="phone">
           </div>
           <div class="mb-3">
             <label for="exampleFormControlInput1" class="form-label">Customer</label>
-            <select class="form-select" aria-label="Default select example">
+            <select class="form-select" aria-label="Default select example" id="user_id">
                 <option selected>Customer List</option>
                 <option value="1">One</option>
                 <option value="2">Two</option>
@@ -300,8 +301,85 @@
               </select>
           </div>
           
-          <button type="button" class="btn btn-primary">Create</button>
+          <button type="submit" class="btn btn-primary">Create</button>
+        </form>
          
+        
+        <script>
+          function getData(){
+            fetch('http://192.168.43.55:8000/V1/customers/', {
+              headers:{
+                      'Content-Type': 'application/json',
+                      'Authorization': 'JWT ' + localStorage.getItem('access')
+                  }
+            })
+              .then(response => response.json())
+              .then(data => {
+                // Get the select element
+                const selectElement = document.querySelector('.form-select');
+
+                // Clear the existing options
+                selectElement.innerHTML = '';
+
+                // Add the default option
+                const defaultOption = document.createElement('option');
+                defaultOption.selected = true;
+                defaultOption.textContent = 'Customer List';
+                selectElement.appendChild(defaultOption);
+
+                // Add options for each customer
+                data.forEach(customer => {
+                  const option = document.createElement('option');
+                  option.value = customer.id;
+                  option.textContent = customer.first_name;
+                  selectElement.appendChild(option);
+                });
+              })
+              .catch(error => console.error('Error fetching data:', error));
+
+            // Get the form element
+            const form = document.querySelector('form');
+
+            // Add an event listener for the form submit event
+            form.addEventListener('submit', event => {
+              event.preventDefault(); // Prevent the default form submission behavior
+
+              // Get the form data
+              const formData = new FormData(form);
+              const firstname = document.querySelector('#firstname').value;
+              const lastname = document.querySelector('#lastname').value;
+              const address = document.querySelector('#address').value;
+              const phone = document.querySelector('#phone').value;
+              const user_id = document.querySelector('#user_id').value;
+
+              // Send a POST request to http://172.20.10.4:8000/V1/customers/ with the form data
+              const dataToSend = JSON.stringify({
+                  first_name: firstname,
+                  last_name: lastname,
+                  address: address,
+                  phone: phone,
+                  user: user_id,
+                })
+                console.log(dataToSend)
+              fetch('http://192.168.43.55:8000/V1/blinds/', {
+                method: 'POST',
+                headers:{
+                    'Content-Type': 'application/json',
+                    'Authorization': 'JWT ' + localStorage.getItem('access')
+                },
+                body: dataToSend
+              })
+              .then(response => {
+                response.json()
+                console.log(response)
+                window.location.href = "/blind.html"
+              })
+              .then(data => console.log('Customer created:', data))
+              .catch(error => console.error('Error creating customer:', error));
+            });
+          }
+          getData()
+        </script>
 
        
 

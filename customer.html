@@ -297,7 +297,7 @@
       
       <script>
   async function getData() {
-    const response = await fetch('http://172.20.10.4:8000/V1/customers', {
+    const response = await fetch('http://192.168.43.55:8000/V1/customers', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -345,7 +345,7 @@
         deleteButton.classList.add('btn', 'btn-sm', 'btn-danger');
         deleteButton.textContent = 'Delete';
         deleteButton.addEventListener('click', async () => {
-          const deleteResponse = await fetch(`http://172.20.10.4:8000/V1/customers/${customer.id}`, {
+          const deleteResponse = await fetch(`http://192.168.43.55:8000/V1/customers/${customer.id}`, {
             method: 'DELETE',
             headers: {
               'Content-Type': 'application/json',
