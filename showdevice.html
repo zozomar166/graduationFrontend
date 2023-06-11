@@ -11,6 +11,12 @@
         <meta name="description" content="">
         <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
         <meta name="generator" content="Hugo 0.111.3">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+      <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
         <title>Dashboard Template · Bootstrap v5.3</title>
 
         <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/dashboard/">
@@ -274,12 +280,89 @@
             <button type="button" class="btn btn-sm btn-primary">Edit</button>
             
         </div>
+
         <div id="datacustomer" data-bs-spy="scroll" data-bs-target="#navbar-example2" data-bs-root-margin="0px 0px -40%" data-bs-smooth-scroll="true" class="scrollspy-example bg-body-tertiary p-3 rounded-2" tabindex="0">
             <h4 id="scrollspyHeading1">API Key</h4>
             <p>25633</p>
             <h4 id="scrollspyHeading2">Blind</h4>
             <p>zozoz</p>
         </div>
+        <div class="my-4">
+          <button class="btn btn-sm btn-primary" id="toggle-drawing-mode">Toggle Drawing Mode</button>
+          <button class="btn btn-sm btn-outline-primary" id="clear-drawing">Clear Drawing</button>
+        </div>
+        <div id="map" style="height: 500px;"></div>
+        
+  <script>
+    var map = L.map('map').setView([33.510414, 36.278336], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+            maxZoom: 18,
+        }).addTo(map);
+    
+        var marker;
+        var marker;
+    var circle1;
+    var circle2;
+    var radius1;
+    var radius2;
+    var drawingMode = false;
+
+    function toggleDrawingMode() {
+      drawingMode = !drawingMode;
+      if (drawingMode) {
+        map.on('click', handleMapClick);
+      } else {
+        map.off('click', handleMapClick);
+        console.log(`Marker: ${marker.getLatLng().lat}, ${marker.getLatLng().lng}`);
+        console.log(`Radius 1: ${radius1}`);
+        console.log(`Radius 2: ${radius2}`);
+      }
+    }
+
+    function handleMapClick(e) {
+      if (!marker) {
+        marker = L.marker(e.latlng).addTo(map);
+      } else if (!circle1) {
+        radius1 = marker.getLatLng().distanceTo(e.latlng);
+        circle1 = L.circle(marker.getLatLng(), {
+          color: 'red',
+          fillColor: '#f03',
+          fillOpacity: 0.5,
+          radius: radius1
+        }).addTo(map);
+      } else if (!circle2) {
+        radius2 = marker.getLatLng().distanceTo(e.latlng);
+        circle2 = L.circle(marker.getLatLng(), {
+          color: 'yellow',
+          fillColor: '#ffff00',
+          fillOpacity: 0.5,
+          radius: radius2
+        }).addTo(map);
+      }
+    }
+
+    function clearDrawing() {
+      if (marker) {
+        map.removeLayer(marker);
+        marker = null;
+      }
+      if (circle1) {
+        map.removeLayer(circle1);
+        circle1 = null;
+        radius1 = null;
+      }
+      if (circle2) {
+        map.removeLayer(circle2);
+        circle2 = null;
+        radius2 = null;
+      }
+    }
+
+    document.getElementById('toggle-drawing-mode').addEventListener('click', toggleDrawingMode);
+    document.getElementById('clear-drawing').addEventListener('click', clearDrawing);
+  </script>
+
         <script>
           function getData(){
             const urlParams = new URLSearchParams(window.location.search);
