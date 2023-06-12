@@ -287,6 +287,8 @@
             <h4 id="scrollspyHeading2">Blind</h4>
             <p>zozoz</p>
         </div>
+
+
         <div class="my-4">
           <button class="btn btn-sm btn-primary" id="toggle-drawing-mode">Toggle Drawing Mode</button>
           <button class="btn btn-sm btn-outline-primary" id="clear-drawing">Clear Drawing</button>
@@ -309,17 +311,63 @@
     var drawingMode = false;
 
     function toggleDrawingMode() {
-      drawingMode = !drawingMode;
-      if (drawingMode) {
-        map.on('click', handleMapClick);
-      } else {
-        map.off('click', handleMapClick);
-        console.log(`Marker: ${marker.getLatLng().lat}, ${marker.getLatLng().lng}`);
-        console.log(`Radius 1: ${radius1}`);
-        console.log(`Radius 2: ${radius2}`);
-      }
-    }
+  drawingMode = !drawingMode;
+  if (drawingMode) {
+    map.on('click', handleMapClick);
+    document.getElementById('toggle-drawing-mode').classList.toggle('btn-secondary');
+    document.getElementById('toggle-drawing-mode').classList.toggle('btn-primary');
+  } else {
+    map.off('click', handleMapClick);
+    console.log(`Marker: ${marker.getLatLng().lat}, ${marker.getLatLng().lng}`);
+    console.log(`Radius 1: ${radius1}`);
+    console.log(`Radius 2: ${radius2}`);
+    document.getElementById('toggle-drawing-mode').classList.toggle('btn-primary');
+    document.getElementById('toggle-drawing-mode').classList.toggle('btn-secondary');
+  }
+}
 
+function toggleDrawingMode() {
+  drawingMode = !drawingMode;
+  if (drawingMode) {
+    map.on('click', handleMapClick);
+    document.getElementById('toggle-drawing-mode').classList.toggle('btn-secondary');
+    document.getElementById('toggle-drawing-mode').classList.toggle('btn-primary');
+  } else {
+    map.off('click', handleMapClick);
+    const data = {
+      lat: marker.getLatLng().lat,
+      lng: marker.getLatLng().lng,
+      radius1: radius1,
+      radius2: radius2
+    };
+
+    const urlParams = new URLSearchParams(window.location.search);
+              const id = urlParams.get('id');
+    fetch(`http://192.168.43.55:8000/V1/devices/${id}/`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'JWT ' + localStorage.getItem('access')
+      },
+      body: JSON.stringify({
+        "c_lat": data.lat,
+        "c_lng": data.lng,
+        "r1_radius": data.radius1,
+        "r2_radius": data.radius2,
+      }
+
+      )
+    })
+    .then(response => {
+      console.log('Data sent successfully:', data);
+    })
+    .catch(error => {
+      console.error('Error sending data:', error);
+    });
+    document.getElementById('toggle-drawing-mode').classList.toggle('btn-primary');
+    document.getElementById('toggle-drawing-mode').classList.toggle('btn-secondary');
+  }
+}
     function handleMapClick(e) {
       if (!marker) {
         marker = L.marker(e.latlng).addTo(map);
@@ -363,52 +411,73 @@
     document.getElementById('clear-drawing').addEventListener('click', clearDrawing);
   </script>
 
-        <script>
-          function getData(){
-            const urlParams = new URLSearchParams(window.location.search);
-            const id = urlParams.get('id');
+  
 
-            fetch(`http://192.168.43.55:8000/V1/devices/${id}/`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'JWT ' + localStorage.getItem('access')
-                }})
-              .then(response => response.json())
-              .then(data => {
-                console.log(data)
-                const api_key = data. api_key;
-                const blind = data.blind.first_name;
-               
-                
-                const html = `
-                  </div>
-                  <div data-bs-spy="scroll" data-bs-target="#navbar-example2" data-bs-root-margin="0px 0px -40%" data-bs-smooth-scroll="true" class="scrollspy-example bg-body-tertiary p-3 rounded-2" tabindex="0">
-                    <h4 id="scrollspyHeading1">Api_key</h4>
-                    <p>${api_key}</p>
-                    <h4 id="scrollspyHeading2">Blind</h4>
-                    <p>${blind}</p>
-                   
-                  </div>
-                `;
-                
-                // Add the HTML to the page
-                document.querySelector('#datacustomer').innerHTML = html;
-              })
-              .catch(error => console.error(error));
-          }
-          getData()
-        </script>
-
-
-
+        
        
 
     
         <script src="/docs/5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 
         <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js" integrity="sha384-gdQErvCNWvHQZj6XZM0dNsAoY4v+j5P1XDpNkcM3HJG1Yx04ecqIHk7+4VBOCHOG" crossorigin="anonymous"></script><script src="dashboard.js"></script>
-    
+        <script>
+          function getData(){
+  const urlParams = new URLSearchParams(window.location.search);
+  const id = urlParams.get('id');
+
+  fetch(`http://192.168.43.55:8000/V1/devices/${id}/`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'JWT ' + localStorage.getItem('access')
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log(data);
+    const api_key = data.api_key;
+    const blind = data.blind.first_name;
+    const lat = data.c_lat;
+    const lng = data.c_lng;
+    const radius1 = data.r1_radius;
+    const radius2 = data.r2_radius;
+
+    const html = `
+      <div data-bs-spy="scroll" data-bs-target="#navbar-example2" data-bs-root-margin="0px 0px -40%" data-bs-smooth-scroll="true" class="scrollspy-example bg-body-tertiary p-3 rounded-2" tabindex="0">
+        <h4 id="scrollspyHeading1">Api_key</h4>
+        <p>${api_key}</p>
+        <h4 id="scrollspyHeading2">Blind</h4>
+        <p>${blind}</p>
+      </div>
+    `;
+
+    // Add the HTML to the page
+    document.querySelector('#datacustomer').innerHTML = html;
+
+    // Add the circle and marker to the map
+    const circle = L.circle([lat, lng], {
+      radius: radius1,
+      color: 'red',
+      fillColor: '#f03',
+      fillOpacity: 0.5
+    }).addTo(map);
+
+
+    const circle2 = L.circle([lat, lng], {
+      radius: radius2,
+      color: 'yellow',
+      fillColor: '#ffff00',
+      fillOpacity: 0.5
+    }).addTo(map);
+    const marker = L.marker([lat, lng]).addTo(map);
+  })
+  .catch(error => console.error(error));
+}
+          getData()
+        </script>
+
+
+
 
     </body>
 </html>
