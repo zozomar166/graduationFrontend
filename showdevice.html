@@ -344,7 +344,7 @@ function toggleDrawingMode() {
     const urlParams = new URLSearchParams(window.location.search);
               const id = urlParams.get('id');
     fetch(`http://192.168.43.55:8000/V1/devices/${id}/`, {
-      method: 'PATCH',
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'JWT ' + localStorage.getItem('access')
@@ -441,6 +441,8 @@ function toggleDrawingMode() {
     const lng = data.c_lng;
     const radius1 = data.r1_radius;
     const radius2 = data.r2_radius;
+    const mlat = data.gps_lat
+    const mlng = data.gps_lng
 
     const html = `
       <div data-bs-spy="scroll" data-bs-target="#navbar-example2" data-bs-root-margin="0px 0px -40%" data-bs-smooth-scroll="true" class="scrollspy-example bg-body-tertiary p-3 rounded-2" tabindex="0">
@@ -454,6 +456,7 @@ function toggleDrawingMode() {
     // Add the HTML to the page
     document.querySelector('#datacustomer').innerHTML = html;
 
+    let m1 = L.marker([mlat, mlng]).addTo(map)
     // Add the circle and marker to the map
     const circle = L.circle([lat, lng], {
       radius: radius1,
